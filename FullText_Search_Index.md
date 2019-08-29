@@ -28,7 +28,7 @@ FULLTEXT Index는 텍스트 필드에 '%검색문자열%'과 비슷한 형태의
 Full text index 동작은 이 블로그 글(https://interconnection.tistory.com/95) 에 설명이 잘 되어있다.
 
 Full text index가 데이터를 인덱싱 하는 기법에는 1) Stop-word parser(built-in parser) 와 2) N-gram parser 이 있으며,
-파싱 과정과 검색 과정이 예시와 함께 설명되어 있으니 인덱스 동작 방법과 검색 과정이 궁금하면 이 블로그를 참고해도 것 같다.
+파싱 과정과 검색 과정이 예시와 함께 설명되어 있으니 인덱스 동작 방법과 검색 과정이 궁금하면 이 블로그를 참고해도 될 것 같다.
 
 먼저, Full text search를 사용하는 방법은 다음과 같다.
 (이 [블로그](https://kmongcom.wordpress.com/2014/03/28/mysql-%ED%92%80-%ED%85%8D%EC%8A%A4%ED%8A%B8fulltext-%EA%B2%80%EC%83%89%ED%95%98%EA%B8%B0/)의 글을 참조하여 정리하였다.)
