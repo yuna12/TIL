@@ -20,7 +20,7 @@
 Index를 생성할 때 가장 효율적인 자료 형은 정수형 자료이다.
 가변적인 크기와 정규화 할 수 없는 데이터는 인덱스를 생성할 때 비효율적으로 동작한다(text 데이터 등).
 이를 위해 FULLTEXT Index를 사용할 수 있다.
-FullTEXT는 TEXT, BLOB, VARCHAR 등 가변적이고 일반적인 Index의 효율성이 떨어지는 부분에서 많은 효과를 가져올 수 있는 인덱스이다.
+FullTEXT는 TEXT, VARCHAR 등 가변적이고 일반적인 Index의 효율성이 떨어지는 부분에서 많은 효과를 가져올 수 있는 인덱스이다.
 FULLTEXT Index는 텍스트 필드에 '%검색문자열%'과 비슷한 형태의 검색 결과를 얻을 수 있고 TEXT에 최적화된 Index 방식이다.
 ```
 
@@ -36,15 +36,34 @@ Full text index 동작은 이 블로그 글(https://interconnection.tistory.com/
 
 마찬가지로 구글링해보니 스택오버플로우에 [나와 같은 질문](https://stackoverflow.com/questions/224714/what-is-full-text-search-vs-like)을 한 사람이 있었다.
 
-다음은 가장 많은 투표를 받은 답변을 정리하였다.
+잘 정리된 답변이 있어 여기에 정리 한다.
+(출처: [스택오버플로우](https://stackoverflow.com/questions/17796717/fulltext-search-vs-standard-database-search/17796826#17796826))
 
-Full text search와 LIKE 연산자의 차이는 `"precision(정확도)"과 "recall(재현율)"의 tradeoff` 라고 했다.
-LIKE operator는 100% precision을 얻을 수 있는 반면에, Full text search는 더 높은 recall을 위해 precision을 조정할 수 있는 유연성이 있다.
+full text searching의 이점은 다음과 같다.
 
-Full text search는 인덱스를 사용해서 구현 된다. 이 인덱스의 키는 개별 용어(terms)이며, 값은 해당 용어를 포함하고 있는 레코드 세트이다.
-Full text search는 이러한 레코드 세트의 intersection, union 등을 계산하도록 최적화되며 일반적으로 주어진 레코드가 검색 키워드와 얼마나 많이 일치하는지를 정려화하는 순위 알고리즘을 제공한다.
+**Indexing:**
 
-반면, LIKE 연산자를 인덱싱 되지 않은 컬럼에 적용하면, 매칭되는 패턴을 찾기 위해 full scan이 일어나 매우 비효율적이며,
-인덱싱된 컬럼을 사용한다 해도, 대부분의 인덱스 조회 보다 효율성이 훨씬 낮다.
+아래와 같이 %연산자를 키워드 앞에 쓰고 LIKE 연산자를 사용하는 경우가 있다.
 
-또 다른 특성은 내일 이어서 정리하겠다.
+`WHERE Foo LIKE '%Bar';`
+
+이러한 조건인 경우에는 `Foo` 컬럼이 인덱싱 된 컬럼일지라도 인덱스를 이용할 수 없다. 모든 행을 살펴보고 키워드와 일치하는지 확인해야 한다.
+그러나 Full text index는 가능하다. Full text index는 단어 일치 순서, 단어가 얼마나 가까운지 등의 측면에서 훨씬 더 flexibility 제공 할 수 있다.
+
+**Stemming:**
+
+Full text search는 단어 stemming이 가능하다. 예를 들어, "run"을 검색하면 "ran" 또는 "running"에 대한 결과를 얻을 수 있다. 
+대부분의 full text 엔진에는 다양한 언어로된 stem dictionaries가 존재 한다.
+
+**Weighted Results:**
+
+Full text index는 여러 컬럼을 포함 할 수 있다. 예를 들어 "peach pie"를 검색하면 index에 제목, 본문, 키워드 등이 포함될 수 있다.
+제목과 일치한다고 검색된 결과가 패턴과 관련성이 높을수록 가중치가 높을 수 있으며, 위쪽에 표시되도록 정렬 할 수 있다.
+
+**Disadvantages:**
+
+Full text index는 표준 B-TREE 인덱스보다 몇 배 더 클 수 있다. 이러한 이유로 데이터베이스 인스턴스를 제공하는 많은 호스팅 제공 업체는
+이 기능을 비활성화하거나 추가 요금을 청구한다. 예를 들어, Windows Azure에서는 full text query를 지원하지 않았다.
+Full text index는 업데이트 속도가 느릴 수 있다. 데이터가 많이 변경되면 표준 인덱스와 비교하여 지연 업데이트 인덱스가 있을 수 있다.
+
+다른 답변이 더 궁금하다면 `Full Text Search vs LIKE` 또는 `Full text search vs standard database search` 키워드로 구글링해보자!
