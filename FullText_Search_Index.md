@@ -42,7 +42,7 @@ Full text index가 데이터를 인덱싱 하는 기법에는 1) Stop-word parse
 
 1. 테이블 생성시 FULLTEXT KEY 등록
 
-```{sql}
+```sql
 create table posts(
     id bigint(100) NOT NULL AUTO_INCREMENT,
     title text NOT NULL,
@@ -55,12 +55,12 @@ create table posts(
 
 2. alter table로 이미 생성된 테이블에 FULLTEXT KEY 등록
 
-```{sql}
+```sql
 alter table posts add FULLTEXT(title);
 ```
 여러 컬럼에 대해서도 FULLTEXT KEY를 생성할 수 있다.
 
-```{sql}
+```sql
 alter table posts add FULLTEXT(title, body, keyword);
 ```
 
@@ -73,15 +73,15 @@ alter table posts add FULLTEXT(title, body, keyword);
 검색 모드는 세 가지가 있으며, 1) 자연어 검색, 2) 불린 모드 검색(boolean mode search), 3) 쿼리 확장 검색으로 구분된다.
 
 * 자연어 검색
-```{sql}
+```sql
 SELECT * FROM posts WHERE MATCH (body) AGAINST ('Foo' IN NATURAL LANGUAGE MODE);
 ```
 * 불린 모드 검색
-```{sql}
+```sql
 SELECT * FROM posts WHERE MATCH (body) AGAINST ('+Foo*+bar*' IN BOOLEAN MODE);
 ```
 * 쿼리 확장 검색
-```{sql}
+```sql
 SELECT * FROM posts WHERE MATCH (body) AGAINST ('Foo*' WITH QUERY EXPANSION);
 ```
 
