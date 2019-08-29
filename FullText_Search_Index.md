@@ -1,5 +1,4 @@
-# MySQL Full Text Search Index
-
+# TIL #1  Full Text Search와 LIKE의 차이
 
 길벗 출판사의 `똑똑하게 코딩하는 법 SQL 코딩의 기술`을 읽고 있다. 
 1장 데이터 모델 설계를 읽고 있던 중에 
