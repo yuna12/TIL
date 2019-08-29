@@ -23,13 +23,69 @@ FullTEXT는 TEXT, VARCHAR 등 가변적이고 일반적인 Index의 효율성이
 FULLTEXT Index는 텍스트 필드에 '%검색문자열%'과 비슷한 형태의 검색 결과를 얻을 수 있고 TEXT에 최적화된 Index 방식이다.
 ```
 
-바로 오늘 내가 정리 할 Full Text search index 이다.
+바로 여기에서 오늘 내가 공부 할 주제를 **Full Text search**으로 정하였다.
 
-Full text index 동작은 이 블로그 글(https://interconnection.tistory.com/95) 에서 잘 설명하였으니 생략하고..
-또한, Full text search 사용 방법은 이 [블로그](https://kmongcom.wordpress.com/2014/03/28/mysql-%ED%92%80-%ED%85%8D%EC%8A%A4%ED%8A%B8fulltext-%EA%B2%80%EC%83%89%ED%95%98%EA%B8%B0/) 에서 잘 설명해주었으니 생략한다.
+Full text index 동작은 이 블로그 글(https://interconnection.tistory.com/95) 에 설명이 잘 되어있다.
 
-그러면 내가 진짜로 정리 할 부분은...!!
-바로 바로 `Full Text Search와 LIKE의 차이` 이다!!
+Full text index가 데이터를 인덱싱 하는 기법에는 1) Stop-word parser(built-in parser) 와 2) N-gram parser 이 있으며,
+파싱 과정과 검색 과정이 예시와 함께 설명되어 있으니 인덱스 동작 방법과 검색 과정이 궁금하면 이 블로그를 참고해도 것 같다.
+
+먼저, Full text search를 사용하는 방법은 다음과 같다.
+(이 [블로그](https://kmongcom.wordpress.com/2014/03/28/mysql-%ED%92%80-%ED%85%8D%EC%8A%A4%ED%8A%B8fulltext-%EA%B2%80%EC%83%89%ED%95%98%EA%B8%B0/)의 글을 참조하여 정리하였다.)
+
+**FULLTEXT 인덱스 생성**
+
+: 테이블 생성시 컬럼에 FULLTEXT KEY 지정 또는 alter table을 이용한 FULLTEXT KEY 등록
+
+(*주의!* *한글검색은 utf-8만 가능, text, binary char, varchar 컬럼 타입만 FULLTEXT KEY를 지정 가능,
+  MyISAM 엔진을 사용하는 테이블에 대해서만 생성할 수 있음*)
+
+1. 테이블 생성시 FULLTEXT KEY 등록
+
+```{sql}
+create table posts(
+    id bigint(100) NOT NULL AUTO_INCREMENT,
+    title text NOT NULL,
+    date datetime NOT NULL,
+    ....
+    PRIMARY KEY (id),
+    FULLTEXT KEY title (title)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+```
+
+2. alter table로 이미 생성된 테이블에 FULLTEXT KEY 등록
+
+```{sql}
+alter table posts add FULLTEXT(title);
+```
+여러 컬럼에 대해서도 FULLTEXT KEY를 생성할 수 있다.
+
+```{sql}
+alter table posts add FULLTEXT(title, body, keyword);
+```
+
+**자연어 검색**
+
+: Full text search는 다음 쿼리를 사용합니다.
+```{sql}
+"SELECT * FROM "테이블명" WHERE MATCH("검색할컬럼명"[, ...]) AGAINST('"검색할키워드식" "검색모드");
+```
+검색 모드는 세 가지가 있으며, 1) 자연어 검색, 2) 불린 모드 검색(boolean mode search), 3) 쿼리 확장 검색으로 구분된다.
+
+* 자연어 검색
+```{sql}
+SELECT * FROM posts WHERE MATCH (body) AGAINST ('Foo' IN NATURAL LANGUAGE MODE);
+```
+* 불린 모드 검색
+```{sql}
+SELECT * FROM posts WHERE MATCH (body) AGAINST ('+Foo*+bar*' IN BOOLEAN MODE);
+```
+* 쿼리 확장 검색
+```{sql}
+SELECT * FROM posts WHERE MATCH (body) AGAINST ('Foo*' WITH QUERY EXPANSION);
+```
+
+이제 본론으로 넘어가서 `Full Text Search와 LIKE의 차이`를 정리해보도록 하겠다. 
 
 이쯤되니 궁금해지지 않겠는가.. % 연산자를 이용해서 LIKE로 검색하는 것과 Full Text Search로 검색하는 것의 차이는 무엇일까
 
@@ -59,10 +115,30 @@ Full text search는 단어 stemming이 가능하다. 예를 들어, "run"을 검
 Full text index는 여러 컬럼을 포함 할 수 있다. 예를 들어 "peach pie"를 검색하면 index에 제목, 본문, 키워드 등이 포함될 수 있다.
 제목과 일치한다고 검색된 결과가 패턴과 관련성이 높을수록 가중치가 높을 수 있으며, 위쪽에 표시되도록 정렬 할 수 있다.
 
+
+full text searching의 약점은 다음과 같다.
+
 **Disadvantages:**
 
 Full text index는 표준 B-TREE 인덱스보다 몇 배 더 클 수 있다. 이러한 이유로 데이터베이스 인스턴스를 제공하는 많은 호스팅 제공 업체는
 이 기능을 비활성화하거나 추가 요금을 청구한다. 예를 들어, Windows Azure에서는 full text query를 지원하지 않았다.
 Full text index는 업데이트 속도가 느릴 수 있다. 데이터가 많이 변경되면 표준 인덱스와 비교하여 지연 업데이트 인덱스가 있을 수 있다.
 
+정리하자면,
+
+Full text search는 표준 인덱스를 사용하는 것보다 검색 속도가 매우 빠르고, 키워드와 일치하는 레코드의 유사성(similarity)을 측정할 수 있고, 
+tokenization(구조화 되지 않은 텍스트(row)를 terms, phrases, tokens으로 나눔)이 가능하며,
+단어의 변형(variation)을 하나의 인덱스로 축소(예를 들어 "mice" and "mouse" 또는 "electrification" and "electric"를 같은 단어로 취급) 할 수 있다.
+
+Full text search의 단점은,
+prefix search만 가능('keyword%' 검색만 가능, 예를 들어 '사과%'를 찾을때 '사과 바나나'는 검색되지만, '풋사과'는 검색되지 않음), text, binary char, varchar 타입만 Full text search가 가능하며, 한글검색은 utf-8만 가능 하고, 표준 B-TREE 인덱스 보다 몇 배는 더 크며, 텍스트 양이 많을 수록 커지는 속도가 더 빠르다. 또한 인덱스를 수정할 때도 오래 걸린다는 단점이 있다.  
+
+
 다른 답변이 더 궁금하다면 `Full Text Search vs LIKE` 또는 `Full text search vs standard database search` 키워드로 구글링해보자!
+
+### 참고
+* MySQL Full Text Search Index 사용하기 (https://interconnection.tistory.com/95)
+* MySQL 풀 텍스트(FULLTEXT) 검색하기 (https://kmongcom.wordpress.com/2014/03/28/mysql-%ED%92%80-%ED%85%8D%EC%8A%A4%ED%8A%B8fulltext-%EA%B2%80%EC%83%89%ED%95%98%EA%B8%B0/)
+* MYSQL FULLTEXT SEARCH (https://medium.com/@pakss328/mysql-fulltext-search-eb64d489cac5)
+* Fulltext search vs standard database search (https://stackoverflow.com/questions/17796717/fulltext-search-vs-standard-database-search/17796826#17796826)
+* What is Full Text Search vs LIKE (https://stackoverflow.com/questions/224714/what-is-full-text-search-vs-like)
