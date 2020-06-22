@@ -57,9 +57,9 @@ psql -U myuser -d DBname < mydb.sql
 ```
 
 ### 참고
-[postgresql DB생성 및 접속 시 Peer authentication에러 발생 시 해야할 것](https://zipeya.tistory.com/entry/postgresql-DB%EC%83%9D%EC%84%B1-%EB%B0%8F-%EC%A0%91%EC%86%8D-%EC%8B%9C-Peer-authentication%EC%97%90%EB%9F%AC-%EB%B0%9C%EC%83%9D-%EC%8B%9C-%ED%95%B4%EC%95%BC%ED%95%A0-%EA%B2%83)
-[Restore a postgres backup file using the command line?](https://stackoverflow.com/questions/2732474/restore-a-postgres-backup-file-using-the-command-line)
-[PostgreSQL DB Backup 및 Restore](https://browndwarf.tistory.com/12)
-[Postgresql Database 백업](https://velog.io/@owljoa/%EC%9E%84%EC%8B%9C-190730)
-[PostgreSQL Client Applications documentation](https://www.postgresql.org/docs/11/app-pgdump.html)
-[ssh로 파일전송 - scp](https://tourspace.tistory.com/220)
+- [postgresql DB생성 및 접속 시 Peer authentication에러 발생 시 해야할 것](https://zipeya.tistory.com/entry/postgresql-DB%EC%83%9D%EC%84%B1-%EB%B0%8F-%EC%A0%91%EC%86%8D-%EC%8B%9C-Peer-authentication%EC%97%90%EB%9F%AC-%EB%B0%9C%EC%83%9D-%EC%8B%9C-%ED%95%B4%EC%95%BC%ED%95%A0-%EA%B2%83)
+- [Restore a postgres backup file using the command line?](https://stackoverflow.com/questions/2732474/restore-a-postgres-backup-file-using-the-command-line)
+- [PostgreSQL DB Backup 및 Restore](https://browndwarf.tistory.com/12)
+- [Postgresql Database 백업](https://velog.io/@owljoa/%EC%9E%84%EC%8B%9C-190730)
+- [PostgreSQL Client Applications documentation](https://www.postgresql.org/docs/11/app-pgdump.html)
+- [ssh로 파일전송 - scp](https://tourspace.tistory.com/220)
