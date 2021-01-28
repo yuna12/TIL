@@ -22,7 +22,11 @@ $ cd myvenv
 **virtualenv로 python 3.6 버전 가상환경 만들기**
 ```
 $ virtualenv [가상환경이름] -p C:/Users/USER/AppData/Local/Programs/Python/Python36/python.exe
+
+-- Python 버전명을 명시하여 만들기
+$ virtualenv [가상환경이름] --python=python3.8.6
 ```
+
 
 #### 4. 가상환경을 실행할 프로젝트 폴더로 이동 후 virtualenv activate
 ```
